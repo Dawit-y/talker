@@ -3,9 +3,22 @@
 
 {% block content %}
 <div class="container mx-auto flex-column items-center justify-center h-[100vh] p-2">
+    <div class="flex items-center justify-between">
+
+        {% if request.user.is_authenticated %}
+        <h2 class="mt-2 text-3xl text-blue-900 font-bold mb-3 text-center"> Welcome {{request.user}}</h2>
+
+        <a href="{% url 'logout' %}?next=/home"
+            class="mt-1 py-1 px-6 font-semibold rounded-lg text-white bg-indigo-500">Logout</a>
+        {% else %}
+        <a href="{% url 'login' %}" class="mt-1 py-1 px-6 font-semibold rounded-lg text-white bg-indigo-500">Login</a>
+        <a href="{% url 'register' %}"
+            class="mt-1 py-1 px-6 font-semibold rounded-lg text-white bg-indigo-500">Register</a>
+        {% endif %}
+    </div>
 
     <h1 class="self-center text-violet-500 text-4xl font-mono m-2  ">New Chatt app</h1>
-    <form id="form" class="m-3">
+    <form id="form" class="max-w-md mx-auto">
         <input type="text" id="message" />
     </form>
 
@@ -29,7 +42,8 @@
         let messages = document.getElementById("messages")
 
         if (data.type == "chat") {
-            messages.insertAdjacentHTML('beforeend', `<p class="text-violet-700 font-bold">${data.message}</p>`)
+            messages.insertAdjacentHTML('beforeend',
+                `  <p class="text-violet-700 font-bold">${data.message}</p>`)
         }
 
     }

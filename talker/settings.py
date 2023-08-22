@@ -41,9 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'chat',
+
     'tailwind',
     'theme',
-    'django_browser_reload'
+    'django_browser_reload',
+
+    "crispy_forms",                     
+    "crispy_tailwind",
 
 ]
 
@@ -144,3 +148,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = 'login'
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
+
+CRISPY_TEMPLATE_PACK = "tailwind"
