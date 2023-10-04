@@ -10,7 +10,7 @@ User = get_user_model()
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to="avatar")
+    avatar = models.ImageField()
     bio = models.TextField()
 
     def __str__(self) -> str:
