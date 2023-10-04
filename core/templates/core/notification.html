@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="m-6 ml-36">
+    <h1 class="mt-2 text-2xl text-blue-900 font-bold mb-3 text-center">Notification</h1>
+
+    <h1 class="mt-2 text-2xl text-blue-900 font-bold mb-3 text-center">Friend request</h1>
+    {% for request in friend_requests%}
+    <div>{{request.sender}} sent you a request Accept or Decline</div>
+    {% endfor %}
+
+    <h1 class="mt-2 text-2xl text-blue-900 font-bold mb-3 text-center">sent request</h1>
+    {% for request in sent_requests %}
+    <div>You have sent request to {{request.recipient}}</div>
+    {% endfor %}
+
+    <h1 class="mt-2 text-2xl text-blue-900 font-bold mb-3 text-center">Friends</h1>
+    {%for friend in friends %}
+    {% if friend.sender == request.user %}
+    <p>{{friend.recipient}}</p>
+    {% else %}
+    <p>{{friend.sender}}</p>
+    {% endif %}
+    {% endfor %}
+
+</div>
+{% endblock content %}
