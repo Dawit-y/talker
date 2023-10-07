@@ -12,6 +12,7 @@
       src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
       defer
     ></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     {% tailwind_css %}
   </head>
 
@@ -62,7 +63,7 @@
 
   <body class="bg-gray-50 font-serif leading-normal tracking-normal">
     {% if request.user.is_authenticated %} {% include "navbar.html" %} {%endif%}
-    {% block content %} {%endblock content%} 
+    {% block content %} {%endblock content%}
     
     
     {% block javascript %}{%endblock javascript%}

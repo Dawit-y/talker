@@ -1,0 +1,213 @@
+<div class="bg-white w-full rounded-md shadow-md h-auto py-3 px-3 my-5">
+  <div class="w-full h-16 flex items-center justify-between">
+    <div class="flex">
+      <img
+        class="rounded-full w-10 h-10 mr-3"
+        src="{{ post.ImageUrl }}"
+        alt=""
+      />
+      <div>
+        <h3 class="text-md font-semibold">{{post.author.user}}</h3>
+        <p class="text-xs text-gray-500">{{post.updated|timesince}}</p>
+      </div>
+    </div>
+    <svg
+      class="w-16"
+      xmlns="http://www.w3.org/2000/svg"
+      width="27"
+      height="27"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#b0b0b0"
+      stroke-width="2"
+      stroke-linecap="square"
+      stroke-linejoin="round"
+    >
+      <circle cx="12" cy="12" r="1"></circle>
+      <circle cx="19" cy="12" r="1"></circle>
+      <circle cx="5" cy="12" r="1"></circle>
+    </svg>
+  </div>
+
+  <p class="mb-1">{{post.content}}</p>
+  <img src="{{post.ImageUrl}}" />
+  <div class="w-full h-8 flex items-center px-3 my-3">
+    <div
+      class="bg-blue-500 z-10 w-5 h-5 rounded-full flex items-center justify-center"
+    >
+      <svg
+        class="w-3 h-3 fill-current text-white"
+        xmlns="http://www.w3.org/2000/svg"
+        width="27"
+        height="27"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#b0b0b0"
+        stroke-width="2"
+        stroke-linecap="square"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
+        ></path>
+      </svg>
+    </div>
+    {% comment %}
+    <div
+      class="bg-red-500 w-5 h-5 rounded-full flex items-center justify-center -ml-1"
+    >
+      <svg
+        class="w-3 h-3 fill-current stroke-current text-white"
+        xmlns="http://www.w3.org/2000/svg"
+        width="27"
+        height="27"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#b0b0b0"
+        stroke-width="2"
+        stroke-linecap="square"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+        ></path>
+      </svg>
+    </div>
+    {% endcomment %}
+
+    <div class="w-full flex justify-between">
+      <p class="ml-3 text-gray-500">{{post.likes}}</p>
+      <p class="ml-3 text-gray-500">{{post.comments.all.count}} comment</p>
+    </div>
+  </div>
+  <hr />
+  <div class="grid grid-cols-3 w-full px-5 my-3">
+    <button
+      class="like flex flex-row justify-center items-center w-full space-x-3"
+      id="like"
+      data-post-id="{{ post.id }}"
+      data-liked-by="{{ request.user.profile.id }}"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="27"
+        height="27"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#838383"
+        stroke-width="2"
+        stroke-linecap="square"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
+        ></path>
+      </svg>
+      <span class="font-semibold text-lg text-gray-600">Like</span>
+    </button>
+    <button class="flex flex-row justify-center items-center w-full space-x-3">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="27"
+        height="27"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#838383"
+        stroke-width="2"
+        stroke-linecap="square"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+        ></path>
+      </svg>
+      <span class="font-semibold text-lg text-gray-600">Comment</span>
+    </button>
+
+    <button class="flex flex-row justify-center items-center w-full space-x-3">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="27"
+        height="27"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#838383"
+        stroke-width="2"
+        stroke-linecap="square"
+        stroke-linejoin="round"
+      >
+        <circle cx="18" cy="5" r="3"></circle>
+        <circle cx="6" cy="12" r="3"></circle>
+        <circle cx="18" cy="19" r="3"></circle>
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+      </svg>
+      <span class="font-semibold text-lg text-gray-600">Share</span>
+    </button>
+  </div>
+  <hr class="mt-2 mb-2" />
+  <div class="flex items-center space-x-2">
+    <img
+      src="{{profile.AvatarUrl}}"
+      alt="User Avatar"
+      class="w-8 h-8 rounded-full"
+    />
+    <form action="{% url 'comment' %}" method="POST">
+      {% csrf_token %}
+
+      <input
+        type="text"
+        name="comment"
+        class="w-full rounded-full h-10 bg-gray-200 px-5 border-none"
+        placeholder="Write a public comment..."
+      />
+      <input
+        type="hidden"
+        class="w-full rounded-full h-10 bg-gray-200 px-5 border-none"
+        name="post_id"
+        value="{{ post.id }}"
+      />
+      <input
+        type="hidden"
+        class="w-full rounded-full h-10 bg-gray-200 px-5 border-none"
+        name="user_id"
+        value="{{ profile.id }}"
+      />
+    </form>
+  </div>
+
+  <div class="mt-4">
+    <!-- Comment 1 -->
+    {% for comment in post.comments.all %}
+    <div class="flex items-center space-x-2">
+      <img
+        src="{{comment.author.AvatarUrl}}"
+        alt="User Avatar"
+        class="w-8 h-8 rounded-full"
+      />
+      <div>
+        <p class="text-gray-800 font-semibold">{{comment.author}}</p>
+        <p class="text-gray-500 text-sm">{{comment.content}}</p>
+      </div>
+    </div>
+    {% endfor %}
+    <!-- Comment 2 -->
+
+    <!-- Reply from John Doe with indentation -->
+    <div class="flex items-center space-x-2 mt-2 ml-6">
+      <img
+        src="https://placekitten.com/40/40"
+        alt="User Avatar"
+        class="w-6 h-6 rounded-full"
+      />
+      <div>
+        <p class="text-gray-800 font-semibold">John Doe</p>
+        <p class="text-gray-500 text-sm">
+          That little furball is from a local shelter. You should check it out!
+          🏠😺
+        </p>
+      </div>
+    </div>
+    <!-- Add more comments and replies as needed -->
+  </div>
+</div>

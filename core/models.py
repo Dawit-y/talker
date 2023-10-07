@@ -1,17 +1,13 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.utils import timezone
-from django.urls import reverse
 
 User = get_user_model()
-
 # Create your models here.
-
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField()
-    bio = models.TextField()
+    avatar = models.ImageField(null=True)
+    bio = models.TextField(null=True, blank=True)
 
     def __str__(self) -> str:
         return self.user.username
@@ -25,12 +21,9 @@ class Profile(models.Model):
         return url
 
 class Post(models.Model):
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     image = models.ImageField(upload_to="images")
-    title = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100, unique_for_date='publish')
     content = models.TextField(null=True, blank=True)
-    publish = models.DateTimeField(default=timezone.now)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -39,7 +32,7 @@ class Post(models.Model):
         get_latest_by = "created"
 
     def __str__(self):
-        return self.title[0:50]
+        return f"posted by {self.author}"
 
     @property
     def ImageUrl(self):
@@ -48,3 +41,31 @@ class Post(models.Model):
         except:
             url = ''
         return url
+    
+    @property
+    def likes(self):
+        return self.like.likedBy.count()
+        
+
+class Like(models.Model):
+    class Reaction(models.TextChoices):
+        Like = 'like'
+        Heart = 'heart'
+
+    likedBy = models.ManyToManyField(Profile)
+    likedPost = models.OneToOneField(Post, on_delete=models.CASCADE)
+    reaction = models.TextField(max_length=9, choices=Reaction.choices, default=Reaction.Like)
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return  f"likes of {self.likedPost}" 
+    
+class Comment(models.Model):
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    content = models.TextField()
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.author} commented on {self.post}"
