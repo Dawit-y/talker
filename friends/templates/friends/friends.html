@@ -1,0 +1,36 @@
+{% extends "friends/friend_layout.html" %} {% block friends %}
+
+<div class="flex-col p-3">
+  <div>
+    <h1 class="p-2 text-lg font-serif font-bold">All Friends</h1>
+  </div>
+  <div class="flex flex-wrap space-x-4 space-y-4 items-center">
+    {% for friend in friends %}
+    <div class="bg-white rounded-lg shadow friend-card w-48 h-60">
+      <div class="flex-col items-center justify-between">
+        <img
+          src="{{friend.sender.AvatarUrl}}"
+          alt="Friend 1"
+          class="w-full h-1/2"
+        />
+
+        <p class="text-gray-700 font-bold text-center p-2">{{friend.sender}}</p>
+        <div class="flex flex-col items-center justify-around h-20">
+          <button
+            class="bg-blue-500 hover:bg-blue-600 text-center text-white py-1 px-4 rounded-md font-bold"
+          >
+            Accept Request
+          </button>
+          <button
+            class="bg-gray-300 hover:bg-gray-200 text-center text-gray-900 py-1 px-4 rounded-md font-bold"
+          >
+            Reject Request
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock friends %}

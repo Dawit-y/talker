@@ -84,3 +84,6 @@ def comment(request):
         comment = Comment.objects.create(author=profile, post= post, content=content)
         return redirect(request.META.get('HTTP_REFERER', '/'))
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+
+def test(request):
+    return render(request, 'core/test.html', {})
