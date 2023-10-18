@@ -36,8 +36,15 @@
         >Sent Requests</a
       >
     </div>
+    <div
+      class="w-full mx-2 p-3 shadow-lg rounded-md bg-gray-100 text-center hover:scale-95 transition-transform mb-4"
+    >
+      <a href="{% url 'find_friends' %}" class="text-center text-lg font-serif"
+        >Find Friends</a
+      >
+    </div>
   </div>
-  <div class="h-[100vh] w-[70%] fixed top-16 right-0 overflow-y-auto">
+  <div class="h-[100vh] w-[70%] fixed top-16 right-0 overflow-y-scroll">
     {% block friends %}{% endblock friends %}
   </div>
 </div>

@@ -2,11 +2,11 @@ from django.db import models
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
-# Create your models here.
+# Create your models here
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(null=True)
+    avatar = models.ImageField(null=True, default="default.png")
     bio = models.TextField(null=True, blank=True)
 
     def __str__(self) -> str:
@@ -19,6 +19,10 @@ class Profile(models.Model):
         except:
             url = ''
         return url
+    def friends(self):
+        sent_accepted = self.sent.filter(status = 'accepted')
+        received_accepted = self.recived.filter(status = 'accepted')
+        return list(sent_accepted)  + list(received_accepted)
 
 class Post(models.Model):
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)

@@ -1,107 +1,88 @@
 import json
-import time
-import random
-from channels.generic.websocket import WebsocketConsumer
-from random import randint
-from channels.consumer import AsyncConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
-from asyncio import sleep
-from asgiref.sync import async_to_sync
+from core.models import Profile
+from .models import Message
+from asgiref.sync import sync_to_async
+from channels.db import database_sync_to_async
 
-class chatConsumer(WebsocketConsumer):
-
-    def connect(self):
-       self.room_group_name = 'test'
-       async_to_sync(self.channel_layer.group_add)(
-           self.room_group_name,
-           self.channel_name
-       )
-       self.accept()
-
-    def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json["message"]  
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type' : 'chat_message',
-                'message' : message
-            }
-        )
-    def chat_message(self,event):
-        message = event['message']
-        self.send(text_data=json.dumps({
-            'type' : "chat",
-            "message" : message
-        }))
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
-        self.room_group_name = "chat_%s" % self.room_name
+        self.sender_id = self.scope['user'].id
+        self.recipient_id = self.scope['url_route']['kwargs']['recipient_id']
+        self.chat_room = self.get_chat_group_name(self.sender_id, self.recipient_id)
 
-        # Join room group
-        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        self.chat_group_name = f'chat_{self.chat_room}'
+
+        # Join chat room group
+        await self.channel_layer.group_add(
+            self.chat_group_name,
+            self.channel_name
+        )
+        
+    # Join user's own group
+        await self.channel_layer.group_add(
+            self.get_channel_name(),
+            self.channel_name
+        )
 
         await self.accept()
 
     async def disconnect(self, close_code):
-        # Leave room group
-        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
-
-    # Receive message from WebSocket
-    async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
-
-        # Send message to room group
-        await self.channel_layer.group_send(
-            self.room_group_name, {"type": "chat_message", "message": message}
+        # Leave chat room group
+        await self.channel_layer.group_discard(
+            self.chat_group_name,
+            self.channel_name
         )
 
-    # Receive message from room group
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        message = data['message']
+        sender_id = self.scope['user'].id
+
+        # Save the message to the database
+        await self.save_message(sender_id, self.recipient_id, message)
+
+        # Send the message to the chat room group
+        await self.channel_layer.group_send(
+            self.chat_group_name,
+            {
+                'type': 'chat_message',
+                'sender_id': sender_id,
+                'message': message
+            }
+        )
+         # Send the message to the recipient's own group
+        await self.channel_layer.group_send(
+            f"user_{self.recipient_id}",
+            {
+                'type': 'chat_message',
+                'sender_id': sender_id,
+                'message': message
+            }
+        )
+
     async def chat_message(self, event):
-        message = event["message"]
+        sender_id = event['sender_id']
+        message = event['message']
 
-        # Send message to WebSocket
-        await self.send(text_data=json.dumps({"message": message}))
+        # Send the message to the WebSocket
+        await self.send(text_data=json.dumps({
+            'sender_id': sender_id,
+            'message': message
+        }))
 
-class DomainTwo:
-
-    def do(self):
-        value = random.randint(0,100)
-        return json.dumps({'data': value})
-class TwoConsumer(AsyncWebsocketConsumer):
+    @staticmethod
+    def get_chat_group_name(sender_id, recipient_id):
+        return f'chat_{sender_id}_{recipient_id}'
     
-    async def connect(self):
-        await self.accept()
-        D = DomainTwo()
-        for i in range(100):
-            data = D.do()
-            await self.send(data)
-            await sleep(2)
-class Domain:
-    def do(self):
-        word = randint(1,100)
-        return json.dumps({"message": word})
+    def get_channel_name(self):
+        return f"user_{self.scope['user'].id}"
 
-class OneConsumer(WebsocketConsumer):
-    def connect(self):
-        self.accept()
-        D = Domain()
-        for i in range(100):
-            data = D.do()
-            self.send(data)
-            time.sleep(2)
+    @database_sync_to_async
+    def save_message(self, sender_id, recipient_id, message):
+        sender = Profile.objects.get(id=sender_id)
+        recipient = Profile.objects.get(id=recipient_id)
 
-# class ChatConsumer(AsyncConsumer):
-#     async def websocket_connect(self, event):
-#         print("connected", event)
-#     async def websocket_receive(self,event):
-#         print("receive", event)
-#     async def websocket_disconnect(self, event):
-#         print("disconnect", event)
-
-
-
-
+        message_obj = Message(sender=sender, recipient=recipient, content=message)
+        message_obj.save()

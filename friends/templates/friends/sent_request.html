@@ -6,27 +6,25 @@
   </div>
   <div class="flex flex-wrap space-x-4 space-y-4 items-center">
     {% for request in sent_requests %}
-    <div class="bg-white rounded-lg shadow friend-card w-48 h-60">
+    <div class="card bg-white rounded-lg shadow friend-card w-48 h-60">
       <div class="flex-col items-center justify-between">
-        <img
-          src="{{request.recipient.AvatarUrl}}"
-          alt="Friend 1"
-          class="w-full h-1/2"
-        />
+        <div class="flex items-center justify-center max-w-full max-h-1/2">
+          <img
+            src="{{request.recipient.AvatarUrl}}"
+            alt="Friend 1"
+            class="flex items-center justify-center max-w-full max-h-1/2"
+          />
+        </div>
 
         <p class="text-gray-700 font-bold text-center p-2">
           {{request.recipient}}
         </p>
         <div class="flex flex-col items-center justify-around h-20">
           <button
-            class="bg-blue-500 hover:bg-blue-600 text-center text-white py-1 px-4 rounded-md font-bold"
+            class="cancel bg-gray-300 hover:bg-gray-200 text-center text-gray-900 py-1 px-4 rounded-md font-bold"
+            data-id="{{request.id}}"
           >
-            Accept Request
-          </button>
-          <button
-            class="bg-gray-300 hover:bg-gray-200 text-center text-gray-900 py-1 px-4 rounded-md font-bold"
-          >
-            Reject Request
+            Cancel
           </button>
         </div>
       </div>
@@ -35,4 +33,27 @@
   </div>
 </div>
 
-{% endblock friends%}
+{% endblock friends%} {% block javascript %}
+
+<script>
+  $(document).ready(function () {
+    $(".cancel").click(function () {
+      var id = $(this).data("id");
+      var url = "http://127.0.0.1:8000/friends/cancel/" + id + "/";
+
+      var self = this;
+
+      $.ajax({
+        url: url,
+        type: "GET",
+        success: function (response) {
+          $(self).addClass("hidden");
+          console.log(response);
+        },
+        error: function (xhr, textStatus, errorThrown) {},
+      });
+    });
+  });
+</script>
+
+{% endblock javascript %}

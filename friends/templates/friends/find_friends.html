@@ -1,0 +1,71 @@
+{% extends "friends/friend_layout.html" %} {% block friends %}
+
+<div class="flex-col p-3">
+  <div>
+    <h1 class="p-2 text-lg font-serif font-bold">Recommended</h1>
+  </div>
+  <div class="flex flex-wrap space-x-4 space-y-4 items-center">
+    {% for profile in recommendations %}
+    <div class="bg-white rounded-lg shadow friend-card w-48 h-60">
+      <div class="flex-col items-center justify-between">
+        <div class="flex items-center justify-center max-w-full max-h-1/2">
+          <img
+            src="{{profile.AvatarUrl}}"
+            alt="Friend 1"
+            class="flex items-center justify-center max-w-full max-h-1/2"
+          />
+        </div>
+        <p class="text-gray-700 font-bold text-center p-2">{{profile}}</p>
+        <div class="flex flex-col items-center justify-around h-20">
+          <button
+            class="addFriend bg-blue-500 hover:bg-blue-600 text-center text-white py-1 px-4 rounded-md font-bold"
+            data-id="{{profile.id}}"
+          >
+            Add Friend
+          </button>
+          <button
+            class="remove bg-gray-300 hover:bg-gray-200 text-center text-gray-900 py-1 px-4 rounded-md font-bold"
+            name="remove"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock friends%} 
+
+{% block javascript %}
+<script>
+  $(document).ready(function () {
+    $(".addFriend").click(function () {
+      var id = $(this).data("id");
+      var url = "http://127.0.0.1:8000/friends/request/" + id + "/";
+
+      var self = this;
+
+      $.ajax({
+        url: url,
+        type: "GET",
+        success: function (response) {
+          $(self).addClass("disabled cursor-not-allowed");
+          $(self).html("Sent");
+          $(self).siblings(".remove").toggleClass("hidden");
+
+          console.log(response);
+        },
+        error: function (xhr, textStatus, errorThrown) {},
+      });
+    });
+
+    $(".remove").click(function (event) {
+      var self = this;
+      $(self).html("Removed");
+      $(self).siblings(".addFriend").toggleClass("hidden");
+    });
+  });
+</script>
+{% endblock javascript %}
