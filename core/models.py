@@ -24,9 +24,13 @@ class Profile(models.Model):
         received_accepted = self.recived.filter(status = 'accepted')
         return list(sent_accepted)  + list(received_accepted)
 
+    def posts(self):
+        return self.posts.all()
+
+
 class Post(models.Model):
-    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to="images")
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="posts")
+    image = models.ImageField(upload_to="images", null= True)
     content = models.TextField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)

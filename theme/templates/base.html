@@ -62,10 +62,9 @@
   </style>
 
   <body class="bg-gray-50 font-serif leading-normal tracking-normal">
+    
     {% if request.user.is_authenticated %} {% include "navbar.html" %} {%endif%}
-    {% block content %} {%endblock content%}
-    
-    
+    {% block content %} {%endblock content%} 
     {% block javascript %}{%endblock javascript%}
   </body>
 </html>

@@ -4,9 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
-from .forms import UserRegistrationForm
+from .forms import UserRegistrationForm, PostForm
 from .models import *
-
 
 @login_required
 def index(request):
@@ -52,6 +51,22 @@ def register(request):
 def logout_form(request):
     logout(request)
     return redirect('login')
+
+def create_post(request):
+    if request.method == "POST":
+        image = request.FILES.get('image') 
+        content = request.POST.get('content') 
+
+        if image is None and content is None: 
+            messages.error(request, 'Missing image or content fields.')
+         
+        else:
+            profile = Profile.objects.get(user=request.user)
+            post = Post.objects.create(author=profile, image=image, content=content)
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
 
 def create_like(request):
     if request.method == 'POST':

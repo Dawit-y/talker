@@ -50,11 +50,13 @@
           src="{{ profile.AvatarUrl}}"
           alt=""
         />
-        <input
-          type="text"
-          class="w-full rounded-full h-10 bg-gray-200 px-5"
-          placeholder="What's on your mind, {{request.user}} ?"
-        />
+        <a id="mainPost" class="w-full rounded-full">
+          <input
+            type="text"
+            class="w-full rounded-full h-10 bg-gray-200 px-5"
+            placeholder="What's on your mind, {{request.user}} ?"
+          />
+        </a>
       </div>
       <div
         class="w-full h-16 flex justify-between px-3 md:px-10 lg:px-24 xl:px-5"
@@ -132,5 +134,30 @@
 
 {% endblock content %} {% block javascript %}
 <script src="{% static 'js/handleLike.js' %}"></script>
+<script>
+  const mainPost = document.getElementById("mainPost");
+  {% comment %} const postModal = document.getElementById("postModal"); {% endcomment %}
+
+  mainPost.onclick = function () {
+    postModal.classList.remove("hidden");
+    postModal.classList.add("flex");
+  };
+
+  function hideModal() {
+    postModal.classList.add("hidden");
+  }
+
+  window.addEventListener("click", function (event) {
+    if (event.target === postModal) {
+      hideModal();
+    }
+  });
+
+  window.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      hideModal();
+    }
+  });
+</script>
 
 {%endblock javascript%}

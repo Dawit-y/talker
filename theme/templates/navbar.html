@@ -1,4 +1,26 @@
+{% load crispy_forms_tags %}
+
 <div class="fixed top-0 w-full z-30">
+  <div
+    id="postModal"
+    class="hidden fixed top-16 inset-0 bg-gray-500 bg-opacity-75 items-center justify-center z-50"
+  >
+    <div class="bg-white p-8 rounded">
+      <!-- Post creation form content -->
+      <form method="POST" action={% url 'create_post' %} enctype="multipart/form-data" >
+        {% csrf_token %}  
+        {% if messages %}
+          <ul class="messages">
+          {% for message in messages %}
+              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+          {% endfor %}
+          </ul>
+        {% endif %}
+        {{post_form|crispy}}
+        <button type="submit" class="bg-green-500 px-8 py-1 text-white rounded">Post</button>
+      </form>
+    </div>
+  </div>
   <nav class="w-full bg-white shadow-md h-16 flex justify-between">
     <div class="w-full lg:w-4/6 xl:w-full h-full flex items-center px-4">
       <svg
@@ -157,6 +179,7 @@
     </div>
     <div class="w-full h-full flex justify-end space-x-2 items-center px-3">
       <button
+        id="post"
         class="w-8 h-8 lg:h-10 lg:w-10 bg-gray-300 focus:outline-none hover:bg-gray-400 rounded-full flex items-center justify-center"
       >
         <svg
@@ -249,9 +272,37 @@
 </div>
 
 {% block javascript %}
+
 <script type="text/javascript">
   const btn = document.getElementById("profile");
   const dropdown = document.getElementById("logout-dropdown");
+  // Get references to the button and modal
+  const postBtn = document.getElementById("post");
+  const postModal = document.getElementById("postModal");
+
+  // Add event listener to the button
+  postBtn.addEventListener("click", function () {
+    postModal.classList.remove("hidden");
+    postModal.classList.add("flex");
+  });
+
+  // Function to hide the modal
+  function hideModal() {
+    postModal.classList.add("hidden");
+  }
+
+  // Close the modal when clicking outside of it or pressing the Escape key
+  window.addEventListener("click", function (event) {
+    if (event.target === postModal) {
+      hideModal();
+    }
+  });
+
+  window.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      hideModal();
+    }
+  });
 
   btn.addEventListener("click", function () {
     dropdown.classList.toggle("hidden");
