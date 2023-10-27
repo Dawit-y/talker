@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
-from .forms import UserRegistrationForm, PostForm
+from .forms import UserRegistrationForm
 from .models import *
 
 @login_required
@@ -100,5 +100,22 @@ def comment(request):
         return redirect(request.META.get('HTTP_REFERER', '/'))
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
 
-def test(request):
-    return render(request, 'core/test.html', {})
+def notification(request):
+    user = request.user
+    profile = Profile.objects.get(user = user)
+    notifications = Notification.objects.filter(notify_to = profile)
+    count = notifications.count()
+    return render(request, 'core/notification.html', {'notifications' : notifications, 'count_num' : count})
+
+def update_notification(request):
+    if request.method == "POST":
+        user = request.user
+        profile = Profile.objects.get(user = user)
+        notifications = Notification.objects.filter(notify_to = profile, is_read = False)
+
+        if notifications.count() > 0:
+            for notif in notifications:
+                notif.is_read = True
+                notif.save()
+        return JsonResponse({'status': 'success', 'message': 'Notification changed!'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})

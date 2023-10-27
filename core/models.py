@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 User = get_user_model()
-# Create your models here
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -77,3 +78,26 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.author} commented on {self.post}"
+    
+class Notification(models.Model):
+    notify_to = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="notifications")
+    content = models.TextField(null = True, blank=True)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+    is_read = models.BooleanField(default=False)
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"notify to {self.notify_to}"
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=["content_type", "object_id"]),
+        ]
+        ordering = ['-updated', '-created']
+        get_latest_by = "created"
+
+    def url(self):
+        return self.content_object.url

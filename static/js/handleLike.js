@@ -1,5 +1,5 @@
 // Function to retrieve the value of a cookie by name
-function getCookie(name) {
+export function getCsrf(name) {
   var cookieValue = null;
   if (document.cookie && document.cookie !== "") {
     var cookies = document.cookie.split(";");
@@ -17,7 +17,7 @@ function getCookie(name) {
 $(document).ready(function () {
   $(".like").each(function () {
     $(this).click(function () {
-      var csrftoken = getCookie("csrftoken");
+      var csrftoken = getCsrf("csrftoken");
       var postId = $(this).attr("data-post-id");
       var profileId = $(this).attr("data-liked-by");
       console.log(postId, profileId);
@@ -34,7 +34,7 @@ $(document).ready(function () {
         },
         success: function (response) {
           // Like object created successfully
-          console.log(response)
+          console.log(response);
           console.log("Like created!");
         },
         error: function (xhr, status, error) {

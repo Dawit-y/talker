@@ -223,6 +223,7 @@
       <button
         class="relative w-8 h-8 lg:h-10 lg:w-10 bg-gray-300 focus:outline-none hover:bg-gray-400 rounded-full flex items-center justify-center"
       >
+       <a id="notification" href="{% url 'notification' %}" >
         <svg
           class="w-4 h-4 lg:w-6 lg:h-6 fill-current text-gray-600 stroke-current"
           xmlns="http://www.w3.org/2000/svg"
@@ -239,11 +240,15 @@
             d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"
           ></path>
         </svg>
+        {% if count > 0 %}
         <div
+          id = "count"
           class="absolute top-0 right-0 w-6 h-6 text-white -mr-2 rounded-full bg-red-500"
         >
-          3
+          {{count}}
         </div>
+        {% endif %}
+       </a>
       </button>
       <button
         id="profile"
@@ -279,6 +284,8 @@
   // Get references to the button and modal
   const postBtn = document.getElementById("post");
   const postModal = document.getElementById("postModal");
+  const count = document.getElementById("count")
+   
 
   // Add event listener to the button
   postBtn.addEventListener("click", function () {
@@ -312,6 +319,81 @@
     console.log("some navbar");
     $(this).toggleClass("text-blue-500");
   });
+
+  // notification
+  function getCsrf(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      var cookies = document.cookie.split(";");
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  $(document).ready(function (){
+    setCookie("hide_notification_count", "false", 1);
+    // Check if the notification count should be hidden
+    var shouldHideCount = getCookie("hide_notification_count") === "true";
+    var count = $("#count");
+    
+    // Hide the notification count if necessary
+    if (shouldHideCount) {
+      count.toggle("hidden");
+    }
+    $("#notification").click(function () {
+      var csrftoken = getCsrf("csrftoken");
+      $.ajax({
+        url: "/notifications/update",
+        type: "POST",
+        headers: {
+          "X-CSRFToken": csrftoken,
+        },
+        success: function (response) {
+          console.log(response);
+          // Store the state to hide the notification count
+          setCookie("hide_notification_count", "true", 1);
+          count.classList.add("hidden");
+        },
+        error: function (xhr, status, error) {
+          // Error handling
+          console.error("Error creating like:", error);
+        },
+      });
+    });
+  });
+
+  // Function to set a cookie
+  function setCookie(name, value, days) {
+    var expires = "";
+    if (days) {
+      var date = new Date();
+      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+  }
+
+  // Function to get the value of a cookie
+  function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(";");
+    for (var i = 0; i < ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) == " ") {
+        c = c.substring(1, c.length);
+      }
+      if (c.indexOf(nameEQ) == 0) {
+        return c.substring(nameEQ.length, c.length);
+      }
+    }
+    return null;
+  }
 </script>
 
 {% endblock javascript %}

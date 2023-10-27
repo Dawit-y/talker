@@ -9,7 +9,9 @@ urlpatterns = [
     path('post/', views.create_post, name = "create_post"),
     path('like/', views.create_like, name='create_like'),
     path('comment/', views.comment, name="comment"),
-    path('test/', views.test, name="test")
+    path('notifications/', views.notification, name="notification"),
+    path('notifications/update', views.update_notification, name="notification_update"),
+    
 ]
 
 
