@@ -26,7 +26,8 @@ def chat_room(request, recipient_id):
         'recipient': recipient,
         'messages': messages,
         'friends' : friends,
-        'sender' : sender
+        'sender' : sender,
+        'profile' : sender
     }
 
     return render(request, 'chat/chat.html', context)

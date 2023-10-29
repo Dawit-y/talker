@@ -9,7 +9,9 @@ def post_form(request):
 
 def count(request):
     user = request.user
-    profile = Profile.objects.get(user = user)
-    notifications = Notification.objects.filter(notify_to = profile, is_read = False)
-    count = notifications.count()
+    count = 0
+    if user.is_authenticated:
+        profile = Profile.objects.get(user = user)
+        notifications = Notification.objects.filter(notify_to = profile, is_read = False)
+        count = notifications.count()
     return {'count' : count}

@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
+
 User = get_user_model()
 
 class Profile(models.Model):
@@ -27,6 +28,26 @@ class Profile(models.Model):
 
     def posts(self):
         return self.posts.all()
+    
+    def latest_message_with_friend(self, friend):
+        from chat.models import Message
+    
+        latest_message_one = Message.objects.filter(sender=self,recipient=friend)
+        latest_message_two = Message.objects.filter(sender=friend,recipient=self)
+        
+        if latest_message_one.exists() and latest_message_two.exists() :
+            ms1 = latest_message_one.latest("timestamp")
+            ms2 = latest_message_two.latest("timestamp")
+            if ms1.timestamp > ms2.timestamp:
+                return ms1
+            else:
+                return ms2
+        elif latest_message_one.exists() and not latest_message_two.exists():
+            return latest_message_one.latest("timestamp")
+        elif latest_message_two.exists() and not latest_message_one.exists():
+            return latest_message_two.latest("timestamp")
+        else:
+            return None
 
 
 class Post(models.Model):
